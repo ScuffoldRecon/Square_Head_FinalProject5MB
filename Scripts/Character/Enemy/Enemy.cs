@@ -1,61 +1,18 @@
 using UnityEngine;
 
-public class Enemy
+public class Enemy : MonoBehaviour
 {
-    private int HP;
-    private float _attackPower;
+    public float speed = 10f;
 
-    public WaveController waveManager;
-
-
-    public virtual bool Hit()
+    void Update()
     {
-        return HP > 0;
-    }
-    public virtual void TakeDamage(int amount)
-    {
-        HP -= amount;
-        Debug.Log($"{gameObject.name} {HP}");
+        if (Gobal.player == null) return;
 
-        if (HP <= 0)
-        {
-            Die();
-        }
-    }
+        Vector3 target = Gobal.player.transform.position;
+        target.z = transform.position.z;
 
-    public void RandomMove()
-    {
+        Vector3 dir = (target - transform.position).normalized;
 
-        Vector3 randomDir = new Vector3(
-            Random.Range(-1f, 1f),
-            0,
-            Random.Range(-1f, 1f)
-        ).normalized;
-
-
-        transform.Translate(randomDir * MovementSpeed * Time.deltaTime);
-
-        Debug.Log($"{gameObject.name} {randomDir}");
-    }
-
-    public virtual void Attack(Player player)
-    {
-        if (player == null) return;
-
-        Debug.Log($"{gameObject.name} {AttackDamage}");
-        player.TakeDamage(AttackDamage);
-    }
-
-    protected void Die()
-    {
-        Debug.Log($"{gameObject.name}");
-
-
-        if (waveManager != null)
-        {
-            waveManager.OnEnemyDead(this);
-        }
-
-        Destroy(gameObject);
+        transform.position += dir * speed * Time.deltaTime;
     }
 }
